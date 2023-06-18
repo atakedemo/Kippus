@@ -1,4 +1,4 @@
-import { Box, Button, FormControl, FormLabel, Input, NumberInput, NumberInputField, Select } from '@chakra-ui/react';
+import { Box, Button, FormControl, FormLabel, Input, Image, Select } from '@chakra-ui/react';
 import { useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
@@ -8,12 +8,19 @@ const { ethers } = require('ethers');
 import abiTicketJson from '../../abi/ticket.json';
 
 const ProductSettings = () => {
+  const [registered, setRegistered] = useState(false);
   const [name, setName] = useState('');
   const [discription, setDiscription] = useState('');
+  const [id, setId] = useState(0);
   const [image, setImage] = useState<File | null>(null);
+  const [imageUrl, setImageUrl] = useState('https://dao-org.4attraem.com/assets/no_image.jpeg');
   const router = useRouter();
-  const contractAddress='0xd1B1882F094E96e0827D78C44Bfd1be187e4E43E';
+
+  //Control On-chain tx
+  const contractAddress='0x565a38C71AeAc5Ed9c439E300B26Cc86e630b881';
   const contractAbi=abiTicketJson.abi;
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const [loading, setLoading] = useState(false);
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setName(event.target.value);
@@ -31,13 +38,13 @@ const ProductSettings = () => {
   };
 
   const handleSubmit = async () => {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
     try {
         // Get Current Id
         const contract = new ethers.Contract(contractAddress,contractAbi,provider);
         const result = await contract.ticketCount();
         console.log(parseInt(result.toString()))
-        const id = parseInt(result.toString()) * 10;
+        const tmpId = parseInt(result.toString()) * 10;
+        setId(tmpId);
 
         // Upload Metadata via AWS
         let tmpFile;
@@ -46,8 +53,9 @@ const ProductSettings = () => {
         } else {
           tmpFile = image;
         }
+        setLoading(true);
         const response = await axios.post(
-          'https://1vlevj4eak.execute-api.ap-northeast-1.amazonaws.com/demo/chainlink/metadata', 
+          'https://1vlevj4eak.execute-api.ap-northeast-1.amazonaws.com/demo/chainlink/metadata-ipfs',
           {
             'image': tmpFile,
             'chainId': '8001',
@@ -61,13 +69,61 @@ const ProductSettings = () => {
             'nft_contract_address': contractAddress,
             'token_id': id
           }
-        );
-        router.push(`/seller/price/${id}`);
+        ).then((res)=>{
+          console.log(res?.data.body);
+          //register metadataULR to contract
+          handleMetadataTx(res?.data.body.r1, res?.data.body.r2)
+        });
     } catch (error) {
         console.error(error);
     }
   };
-
+  const handleMetadataTx = async(_url01:string, _url02:string) => {
+    
+    try {
+      const signer = await provider.getSigner();
+      const tokenABI = [{
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "_ticketId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "_uri01",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "_uri02",
+            "type": "string"
+          }
+        ],
+        "name": "setTokenURI",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      }]
+      const contract = new ethers.Contract(
+        contractAddress,
+        tokenABI,
+        signer
+      );
+      console.log(contract)
+      const tx = await contract.setTokenURI(
+          id,
+          _url01,
+          _url02
+      ); 
+      await tx.wait();
+    } catch(error){
+      console.error(error);
+    } finally {
+      setLoading(false);
+      setRegistered(true);
+    }  
+  }
   const handleUploadImage = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -81,7 +137,6 @@ const ProductSettings = () => {
     reader.readAsDataURL(image);
     reader.onloadend = async () => {
       const base64data = reader.result;
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
       try {
         // Get Current Id
         const response = await axios.post(
@@ -92,6 +147,7 @@ const ProductSettings = () => {
         );
         console.log(response.data.body);
         setImage(response.data.body);
+        setImageUrl(response.data.body);
       } catch (error) {
         console.error(error);
       }
@@ -102,6 +158,18 @@ const ProductSettings = () => {
     <Box>
       <Header/>
       <Box>
+        <Box padding={4} backgroundColor='#F2F1EF' marginBottom={4}>
+          <form onSubmit={handleUploadImage}>
+            <FormControl marginBottom={4}>
+              <FormLabel>Image</FormLabel>
+              <Input type='file' accept='image/*' onChange={handleImageChange}/>
+            </FormControl>
+            <Image src={imageUrl} alt="Ticket Image" height={200} width={300} marginBottom={3}/>
+            <Button type='submit' backgroundColor='#8C7370' color='white'>
+              Upload Image
+            </Button>
+          </form>
+        </Box>
         <Box padding={4} backgroundColor='#F2F1EF'>
           <form onSubmit={handleSubmit}>
             <FormControl marginBottom={4}>
@@ -112,22 +180,27 @@ const ProductSettings = () => {
               <FormLabel>discription</FormLabel>
               <Input value={discription} onChange={handleDiscriptionChange} backgroundColor='white' />
             </FormControl>
-            <Button backgroundColor='#8C7370' color='white' onClick={handleSubmit}>
-              Next
+            <Button 
+              backgroundColor='#8C7370' 
+              color='white' 
+              onClick={handleSubmit}
+              isLoading={loading} 
+              loadingText="Loading..." 
+            >
+              Register Info
             </Button>
+            {registered && (
+              <Button 
+                backgroundColor='#8C7370' 
+                marginLeft={3} 
+                color='white' 
+                onClick={() => router.push(`/seller/price/${id}`)}>
+                Next
+              </Button>
+            )}
           </form>
         </Box>
-        <Box padding={4} backgroundColor='#F2F1EF'>
-          <form onSubmit={handleUploadImage}>
-            <FormControl marginBottom={4}>
-              <FormLabel>Image</FormLabel>
-              <Input type='file' accept='image/*' onChange={handleImageChange}/>
-            </FormControl>
-            <Button type='submit' backgroundColor='#8C7370' color='white'>
-              Upload Image
-            </Button>
-          </form>
-        </Box>
+        
       </Box>
     </Box>
   );

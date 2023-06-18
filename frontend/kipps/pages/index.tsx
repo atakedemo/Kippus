@@ -26,11 +26,10 @@ const products: Product[] = [
   { id: 30, name: 'Outdoor PGM', image: "https://dao-org.4attraem.com/assets/16fa6730-ee61-44a7-a075-e335d96ef4a9.png", price: 2 },
 ];
 
-
 const ProductList = () => {
   const router = useRouter();
   const [NFTs, setNFTs] = useState<any>();
-  const contractAddress='0xd1B1882F094E96e0827D78C44Bfd1be187e4E43E';
+  const contractAddress='0x565a38C71AeAc5Ed9c439E300B26Cc86e630b881';
   const contractAbi=abiTicketJson.abi;
   const [tickets, setTickets] = useState([]);
 

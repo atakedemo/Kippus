@@ -18,7 +18,7 @@ type Product = {
 };
 
 const products: Product[] = [
-  { id: 10, name: "sample ticket", image: "https://dao-org.4attraem.com/assets/e62d625e-5b20-4848-bb5d-71c9d01ae219.png", price: 1 },
+  { id: 0, name: "sample ticket", image: "https://dao-org.4attraem.com/assets/e62d625e-5b20-4848-bb5d-71c9d01ae219.png", price: 1 },
   { id: 30, name: 'Outdoor PGM', image: "https://dao-org.4attraem.com/assets/16fa6730-ee61-44a7-a075-e335d96ef4a9.png", price: 2 },
 ];
 
@@ -28,7 +28,7 @@ const ProductList = () => {
 
   const fetchNftData = async() => {
     console.log("Now!!!!");
-    const tmpNFTs = await alchemy.nft.getNftsForContract("0xFBaD63bAbe3C6324e6B49e15C6e87D58A0282295");
+    const tmpNFTs = await alchemy.nft.getNftsForContract("0x565a38C71AeAc5Ed9c439E300B26Cc86e630b881");
     setNFTs(tmpNFTs.nfts);
     console.log(NFTs);
   }

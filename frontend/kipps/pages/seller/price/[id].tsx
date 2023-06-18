@@ -1,9 +1,11 @@
 import { 
     Box, Button, FormControl, FormLabel, Input, NumberInput, NumberInputField, Select,
-    Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure
+    Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure,
+    RadioGroup, Radio, Stack
 } from '@chakra-ui/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import axios from 'axios';
 import DateTimePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import Header from '../../../components/Header';
@@ -13,16 +15,18 @@ import abiTicketJson from '../../../abi/ticket.json';
 
 const PriceSettingContent = () => {
     const address = useAddress();
-    const contractAddress='0xd1B1882F094E96e0827D78C44Bfd1be187e4E43E';
+    const contractAddress='0x565a38C71AeAc5Ed9c439E300B26Cc86e630b881';
     const contractAbi=abiTicketJson.abi;
 
     const router = useRouter();
     const [feeAddress, setFeeAddress] = useState('0x326C977E6efc84E512bB9C30f76E30c160eD06FB');
     const [price, setPrice] = useState(0);
-    const [category, setCategory] = useState('0x66e69CF6d7ebE2B4974d251323d43DC724292a0b');
+    const [category, setCategory] = useState('0x01eDd650139d0857318c5733587F86E8Dde8396B');
     const [startDate, setStartDate] = useState<Date | null>(null);
     const [endDate, setEndDate] = useState<Date | null>(null);
     const [eventDate, setEventDate] = useState<Date | null>(null);
+    const [priceOption, setPriceOption] = useState<'manual' | 'automatic'>('manual');
+    const [autoPrice, setAutoPrice] = useState(0);
 
     //Control Modal
     const { isOpen, onOpen, onClose } = useDisclosure();
@@ -36,6 +40,18 @@ const PriceSettingContent = () => {
     const handleStartDateChange = (date: Date | null) => {setStartDate(date);};
     const handleEndDateChange = (date: Date | null) => {setEndDate(date);};
     const handleEventDateChange = (date: Date | null) => {setEventDate(date);};
+    
+    const fetchAutoPrice = async () => {
+    try {
+        await axios.get(
+            'https://1vlevj4eak.execute-api.ap-northeast-1.amazonaws.com/demo/chainlink/price'
+        ).then((res)=>{
+            setPrice(res.data.body);
+        });
+    } catch (error) {
+        console.error('Error fetching auto price:', error);
+    }
+    };
 
     const handleSubmit = async() => {
         if (!startDate || !endDate || !eventDate) {
@@ -129,15 +145,23 @@ const PriceSettingContent = () => {
         <Box padding={4} backgroundColor='#F2F1EF'>
             <form onSubmit={handleSubmit}>
                 <FormControl marginBottom={4}>
-                    <FormLabel>Name</FormLabel>
+                    <FormLabel>Fee Token （Contract Address）</FormLabel>
                     <Input value={feeAddress} onChange={handleFeeAddressChange} backgroundColor='white' />
                 </FormControl>
-                <FormControl marginBottom={4}>
+                
+                <FormControl marginBottom={2}>
                     <FormLabel>Price</FormLabel>
                     <NumberInput value={price} onChange={handlePriceChange} precision={2} step={0.01} min={0} backgroundColor='white'>
                         <NumberInputField />
                     </NumberInput>
                 </FormControl>
+                <Button 
+                    //isLoading={loading} 
+                    //loadingText="Loading..." 
+                    colorScheme="#F2F1EF" color="#000000" variant="outline" borderColor="#000000" marginBottom={4} padding={1}
+                    onClick={fetchAutoPrice}>
+                    AI Recommend
+                </Button>
                 <FormControl marginBottom={4}>
                     <FormLabel>Optional Setting</FormLabel>
                     <Select value={category} onChange={handleCategoryChange} backgroundColor='white'>
