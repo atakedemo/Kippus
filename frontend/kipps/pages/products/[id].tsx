@@ -19,7 +19,7 @@ const alchemy = new Alchemy(settings);
 
 const ProductDetailContent = () => {
   const address = useAddress();
-  const contractAddress='0x4C874CCacA16f482b872Cb323174bc0D3636E3Bb';
+  const contractAddress='0xd1B1882F094E96e0827D78C44Bfd1be187e4E43E';
   const contractAbi=abiTicketJson.abi;
   const erc20Abi = abiErc20Json.abi;
   const router = useRouter();
@@ -45,7 +45,7 @@ const ProductDetailContent = () => {
     const _id = handleId(id);
     await alchemy.nft
       .getNftMetadata(
-        "0x4C874CCacA16f482b872Cb323174bc0D3636E3Bb", 
+        "0xd1B1882F094E96e0827D78C44Bfd1be187e4E43E", 
         handleId(_id)
       )
       .then((res)=>{

@@ -1,0 +1,76 @@
+type ApprovalForAll @entity(immutable: true) {
+  id: Bytes!
+  account: Bytes! # address
+  operator: Bytes! # address
+  approved: Boolean! # bool
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type TransferBatch @entity(immutable: true) {
+  id: Bytes!
+  operator: Bytes! # address
+  from: Bytes! # address
+  to: Bytes! # address
+  ids: [BigInt!]! # uint256[]
+  values: [BigInt!]! # uint256[]
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type TransferSingle @entity(immutable: true) {
+  id: Bytes!
+  operator: Bytes! # address
+  from: Bytes! # address
+  to: Bytes! # address
+  TicketErc1155_id: BigInt! # uint256
+  value: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type URI @entity(immutable: true) {
+  id: Bytes!
+  value: String! # string
+  TicketErc1155_id: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type ticketMinted @entity(immutable: true) {
+  id: Bytes!
+  ticketId: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type ticketSet @entity(immutable: true) {
+  id: Bytes!
+  ticketId: BigInt! # uint256
+  baseMetadataURIPrefix: String! # string
+  feeAddress: Bytes! # address
+  feeAmount: BigInt! # uint256
+  startTime: BigInt! # uint256
+  endTime: BigInt! # uint256
+  eventTime: BigInt! # uint256
+  mintLimit: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+  image: String #additional params
+  location: String #additional params
+}
+
+type ticketWithdraw @entity(immutable: true) {
+  id: Bytes!
+  ticketId: BigInt! # uint256
+  salesPaid: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}

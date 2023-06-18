@@ -30,7 +30,7 @@ const products: Product[] = [
 const ProductList = () => {
   const router = useRouter();
   const [NFTs, setNFTs] = useState<any>();
-  const contractAddress='0x4C874CCacA16f482b872Cb323174bc0D3636E3Bb';
+  const contractAddress='0xd1B1882F094E96e0827D78C44Bfd1be187e4E43E';
   const contractAbi=abiTicketJson.abi;
   const [tickets, setTickets] = useState([]);
 
@@ -44,16 +44,6 @@ const ProductList = () => {
       console.log("i = " + i);
 
     }
-    //const id = parseInt(result.toString()) * 10;
-    /*
-    await alchemy.nft
-      .getNftsForContract("0x4C874CCacA16f482b872Cb323174bc0D3636E3Bb")
-      .then((tmpNFTs)=>{
-        console.log("get!!!");
-        console.log(NFTs);
-        setNFTs(tmpNFTs.nfts)
-      });
-    */
   }
  
   useEffect(() => {

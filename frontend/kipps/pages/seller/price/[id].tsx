@@ -13,7 +13,7 @@ import abiTicketJson from '../../../abi/ticket.json';
 
 const PriceSettingContent = () => {
     const address = useAddress();
-    const contractAddress='0x4C874CCacA16f482b872Cb323174bc0D3636E3Bb';
+    const contractAddress='0xd1B1882F094E96e0827D78C44Bfd1be187e4E43E';
     const contractAbi=abiTicketJson.abi;
 
     const router = useRouter();
@@ -141,8 +141,8 @@ const PriceSettingContent = () => {
                 <FormControl marginBottom={4}>
                     <FormLabel>Optional Setting</FormLabel>
                     <Select value={category} onChange={handleCategoryChange} backgroundColor='white'>
-                        <option value='0x66e69CF6d7ebE2B4974d251323d43DC724292a0b'>Rainy Cash Back</option>
-                        <option value='0xbf7c75051D0bc36f8B55fD534B1a4f25C485117F'>Rainy NFT</option>
+                        <option value='0x01edd650139d0857318c5733587f86e8dde8396b'>Rainy Cash Back</option>
+                        <option value='0x5060c712355225850c90390ab4e379c0938384fa'>Rainy NFT</option>
                         <option value='category3'>Premium NFT(coming soon...)</option>
                     </Select>
                 </FormControl>

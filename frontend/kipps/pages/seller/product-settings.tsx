@@ -12,7 +12,7 @@ const ProductSettings = () => {
   const [discription, setDiscription] = useState('');
   const [image, setImage] = useState<File | null>(null);
   const router = useRouter();
-  const contractAddress='0x4C874CCacA16f482b872Cb323174bc0D3636E3Bb';
+  const contractAddress='0xd1B1882F094E96e0827D78C44Bfd1be187e4E43E';
   const contractAbi=abiTicketJson.abi;
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -54,10 +54,8 @@ const ProductSettings = () => {
             'name': name,
             'description': discription,
             'attributes': [
-              {
-                'value': 'Type',
-                'trait_type': 'Ticket'
-              }
+              {'value': 'Ticket','trait_type': 'Type'},
+              {'value': 'Tokyo','trait_type': 'Location'}
             ],
             'animation_url': '',
             'nft_contract_address': contractAddress,
