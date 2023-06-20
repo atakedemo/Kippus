@@ -33,6 +33,7 @@ const ProductSettings = () => {
  
   useEffect(() => {
     fetchCurrentId();
+    window
   },[]);
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {

@@ -15,7 +15,7 @@ contract TicketErc1155 is ERC1155 {
     address public contractOwner;
     uint256 public salesPaid;
     uint256 public ticketCount;
-    mapping(uint256 => string) private _tokenURIs;
+    mapping(uint256 => string) public _tokenURIs;
 
     struct Ticket {
         address feeAddress;
@@ -35,7 +35,8 @@ contract TicketErc1155 is ERC1155 {
 
     event ticketSet(
         uint256 ticketId, 
-        string baseMetadataURIPrefix, 
+        string metadata,
+        address admin, 
         address feeAddress,
         uint256 feeAmount,
         uint256 startTime,
@@ -61,23 +62,18 @@ contract TicketErc1155 is ERC1155 {
     }
     
     function setTokenURI(uint256 _ticketId, string memory _uri) external {
-        require(msg.sender == adminList[_ticketId]);
+        require(msg.sender == adminList[_ticketId] || address(0) == adminList[_ticketId]);
         _tokenURIs[_ticketId] = _uri;
     }
+    function setTokenURI(uint256 _ticketId, string memory _uri01, string memory _uri02) external {
+         require(msg.sender == adminList[_ticketId] || address(0) == adminList[_ticketId]);
+        _tokenURIs[_ticketId] = _uri01;
+        _tokenURIs[_ticketId + 1] = _uri02;
+    }
     function uri(uint256 tokenId) public view override returns (string memory) {
-        string memory baseURI = super.uri(0);
-        return bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, _tokenURIs[tokenId])) : "";
+        string memory tokenURI = _tokenURIs[tokenId];
+        return string(abi.encodePacked(tokenURI));
     }
-    /*
-    function uri(uint256 _id) public view override returns (string memory) {
-        // "https://~~~" + tokenID + ".json" の文字列結合を行っている
-	    return string(abi.encodePacked(
-            baseMetadataURIPrefix,
-            Strings.toString(_id),
-            baseMetadataURISuffix
-        ));
-    }
-    */
 
     function mintBatch(uint256[] memory _tokenIds, uint256[] memory _amounts) public { 
         require(msg.sender == contractOwner, "you don't have a permission (Error : 403)");
@@ -156,7 +152,8 @@ contract TicketErc1155 is ERC1155 {
         ticketCount = ticketCount + 1;
         emit ticketSet(
             _ticketId,
-            baseMetadataURIPrefix,
+            _tokenURIs[_ticketId],
+            msg.sender,
             _feeAddress,
             _feeAmount,
             _startTime,
@@ -188,7 +185,8 @@ contract TicketErc1155 is ERC1155 {
         ticketOracleLogic[_ticketId] = _oracleAddress;
         emit ticketSet(
             _ticketId,
-            baseMetadataURIPrefix,
+            _tokenURIs[_ticketId],
+            msg.sender,
             _feeAddress,
             _feeAmount,
             _startTime,
@@ -230,7 +228,8 @@ contract TicketErc1155 is ERC1155 {
         ticketList[_ticketId].mintLimit = _mintLimit;
         emit ticketSet(
             _ticketId,
-            baseMetadataURIPrefix,
+            _tokenURIs[_ticketId],
+            msg.sender,
             _feeAddress,
             _feeAmount,
             _startTime,
