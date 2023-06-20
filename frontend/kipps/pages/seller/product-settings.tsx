@@ -19,21 +19,23 @@ const ProductSettings = () => {
   //Control On-chain tx
   const contractAddress='0x565a38C71AeAc5Ed9c439E300B26Cc86e630b881';
   const contractAbi=abiTicketJson.abi;
-  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  
   const [loading, setLoading] = useState(false);
 
   const fetchCurrentId = async() => {
     // Get Current Id
-    const contract = new ethers.Contract(contractAddress,contractAbi,provider);
-    const result = await contract.ticketCount();
-    console.log(parseInt(result.toString()))
-    const tmpId = parseInt(result.toString()) * 10;
-    setId(tmpId);
+    if (typeof window !== "undefined") {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const contract = new ethers.Contract(contractAddress,contractAbi,provider);
+      const result = await contract.ticketCount();
+      console.log(parseInt(result.toString()))
+      const tmpId = parseInt(result.toString()) * 10;
+      setId(tmpId);
+    }
   }
  
   useEffect(() => {
     fetchCurrentId();
-    window
   },[]);
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -54,11 +56,14 @@ const ProductSettings = () => {
   const handleSubmit = async () => {
     try {
         // Get Current Id
-        const contract = new ethers.Contract(contractAddress,contractAbi,provider);
-        const result = await contract.ticketCount();
-        console.log(parseInt(result.toString()))
-        const tmpId = parseInt(result.toString()) * 10;
-        setId(tmpId);
+        if (typeof window !== "undefined") {
+          const provider = new ethers.providers.Web3Provider(window.ethereum);
+          const contract = new ethers.Contract(contractAddress,contractAbi,provider);
+          const result = await contract.ticketCount();
+          console.log(parseInt(result.toString()))
+          const tmpId = parseInt(result.toString()) * 10;
+          setId(tmpId);
+        }
 
         // Upload Metadata via AWS
         let tmpFile;
@@ -95,42 +100,46 @@ const ProductSettings = () => {
   const handleMetadataTx = async(_url01:string, _url02:string) => {
     
     try {
-      const signer = await provider.getSigner();
-      const tokenABI = [{
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "_ticketId",
-            "type": "uint256"
-          },
-          {
-            "internalType": "string",
-            "name": "_uri01",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "_uri02",
-            "type": "string"
-          }
-        ],
-        "name": "setTokenURI",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      }]
-      const contract = new ethers.Contract(
-        contractAddress,
-        tokenABI,
-        signer
-      );
-      console.log(contract)
-      const tx = await contract.setTokenURI(
-          id,
-          _url01,
-          _url02
-      ); 
-      await tx.wait();
+      if (typeof window !== "undefined") {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+      
+        const signer = await provider.getSigner();
+        const tokenABI = [{
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "_ticketId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "_uri01",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "_uri02",
+              "type": "string"
+            }
+          ],
+          "name": "setTokenURI",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        }]
+        const contract = new ethers.Contract(
+          contractAddress,
+          tokenABI,
+          signer
+        );
+        console.log(contract)
+        const tx = await contract.setTokenURI(
+            id,
+            _url01,
+            _url02
+        ); 
+        await tx.wait();
+      }
     } catch(error){
       console.error(error);
     } finally {
