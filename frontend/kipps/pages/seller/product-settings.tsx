@@ -1,5 +1,5 @@
 import { Box, Button, FormControl, FormLabel, Input, Image, Select } from '@chakra-ui/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import Header from '../../components/Header'
@@ -21,6 +21,19 @@ const ProductSettings = () => {
   const contractAbi=abiTicketJson.abi;
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   const [loading, setLoading] = useState(false);
+
+  const fetchCurrentId = async() => {
+    // Get Current Id
+    const contract = new ethers.Contract(contractAddress,contractAbi,provider);
+    const result = await contract.ticketCount();
+    console.log(parseInt(result.toString()))
+    const tmpId = parseInt(result.toString()) * 10;
+    setId(tmpId);
+  }
+ 
+  useEffect(() => {
+    fetchCurrentId();
+  },[]);
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setName(event.target.value);

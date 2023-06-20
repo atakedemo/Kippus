@@ -21,7 +21,7 @@ type Product = {
 };
 
 const products: Product[] = [
-  { id: 0, name: "Special Football Game", image: "https://dao-org.4attraem.com/assets/sample_soccer.jpeg", price: 1 },
+  { id: 40, name: "Sample", image: "https://dao-org.4attraem.com/assets/sample_soccer.jpeg", price: 1 },
   { id: 10, name: "sample ticket", image: "https://dao-org.4attraem.com/assets/e62d625e-5b20-4848-bb5d-71c9d01ae219.png", price: 1 },
   { id: 30, name: 'Outdoor PGM', image: "https://dao-org.4attraem.com/assets/16fa6730-ee61-44a7-a075-e335d96ef4a9.png", price: 2 },
 ];
@@ -33,6 +33,7 @@ const ProductList = () => {
   const contractAbi=abiTicketJson.abi;
   const [tickets, setTickets] = useState([]);
 
+  /*
   const fetchNftData = async() => {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const contract = new ethers.Contract(contractAddress,contractAbi,provider);
@@ -48,6 +49,7 @@ const ProductList = () => {
   useEffect(() => {
     fetchNftData();
   },[]);
+  */
 
   return (
     <Box padding={4}>
